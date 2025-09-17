@@ -1,6 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import fetchApi from "../fetchApi";
+import fetchApi from "./fetchApi";
 import { textResponse } from "./utils";
 
 export default function agentsToolsRegisterer(mcpServer: McpServer) {
