@@ -1,7 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import fetchApi from "./fetchApi";
-import { textResponse } from "./utils";
+import { objectToFormData, textResponse } from "./utils";
 
 export default function agentsToolsRegisterer(mcpServer: McpServer) {
     const agentSchecma = z.object({
@@ -9,12 +9,14 @@ export default function agentsToolsRegisterer(mcpServer: McpServer) {
         agentName: z.string(),
         avatar: z.string().optional().nullable(),
         description: z.string(),
-        systemInstructions: z.string().optional(),
-        greetingMessage: z.string().optional(),
-        dontKnowResponse: z.string().optional(),
-        responseSyntax: z.string().optional(),
+        systemInstructions: z.string().optional().nullable(),
+        greetingMessage: z.string().optional().nullable(),
+        dontKnowResponse: z.string().optional().nullable(),
+        responseSyntax: z.enum(["markdown"]),
         createdAt: z.string(),
-        updatedAt: z.string(),
+        userEmail: z.string().email(),
+        datasetId: z.string().uuid().nullable(),
+        isPublished: z.boolean()
     })
 
     mcpServer.registerTool(
@@ -55,8 +57,8 @@ export default function agentsToolsRegisterer(mcpServer: McpServer) {
             }
         },
         async (agent) => {
-            const response = await fetchApi.post("agents", agent)
-            return textResponse(response)
+            const response = await fetchApi.post("agents", objectToFormData(agent));
+            return textResponse(response);
         }
     )
 
@@ -66,7 +68,10 @@ export default function agentsToolsRegisterer(mcpServer: McpServer) {
             title: "Get an agent",
             description: "Get a single agent by id",
             inputSchema: { agentId: z.string() },
-            outputSchema: { agent: agentSchecma }
+            outputSchema: {
+                agent: agentSchecma.nullable(),
+                error: z.string().nullable(),
+            }
         },
         async ({ agentId }) => {
             const { success, result, error } = await fetchApi.get("agents/" + agentId)
@@ -99,7 +104,7 @@ export default function agentsToolsRegisterer(mcpServer: McpServer) {
             }
         },
         async ({ agentId, updateData }) => {
-            const response = await fetchApi.patch("agents/" + agentId, updateData)
+            const response = await fetchApi.patch("agents/" + agentId, objectToFormData(updateData))
             return textResponse(response)
         }
     )

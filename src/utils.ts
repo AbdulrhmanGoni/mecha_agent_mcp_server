@@ -10,3 +10,13 @@ export function textResponse({ success, error, result }: FetchResult): CallToolR
         isError: !success,
     }
 }
+
+export function objectToFormData(object: Record<string, string | undefined | null>): FormData {
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(object)) {
+        if (value != null && value != undefined) {
+            formData.append(key, value);
+        }
+    }
+    return formData;
+}

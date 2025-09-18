@@ -38,7 +38,7 @@ class FetchApi {
             const fetchOptions: RequestInit = {
                 method,
                 headers: {
-                    'Content-Type': 'application/json',
+                    ...(body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
                     'Authorization': 'Bearer ' + this.apiKey,
                     ...headers
                 }
