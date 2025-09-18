@@ -147,4 +147,44 @@ export default function agentsToolsRegisterer(mcpServer: McpServer) {
             return textResponse(response)
         }
     )
+
+    mcpServer.registerTool(
+        "link-agent-with-dataset",
+        {
+            title: "Link agent with dataset",
+            description: "Associate an agent with a dataset, allowing the agent to access and use the dataset.",
+            inputSchema: {
+                agentId: z.string().uuid(),
+                datasetId: z.string().uuid()
+            }
+        },
+        async ({ agentId, datasetId }) => {
+            const searchParams = new URLSearchParams([
+                ["datasetId", datasetId],
+                ["action", "associate"]
+            ])
+            const response = await fetchApi.patch(`agents/${agentId}/dataset?` + searchParams.toString())
+            return textResponse(response)
+        }
+    )
+
+    mcpServer.registerTool(
+        "unlink-agent-from-dataset",
+        {
+            title: "Unlink agent from dataset",
+            description: "Disassociate an agent from a dataset, removing the agent's access to the dataset.",
+            inputSchema: {
+                agentId: z.string().uuid(),
+                datasetId: z.string().uuid()
+            }
+        },
+        async ({ agentId, datasetId }) => {
+            const searchParams = new URLSearchParams([
+                ["datasetId", datasetId],
+                ["action", "unassociate"]
+            ])
+            const response = await fetchApi.patch(`agents/${agentId}/dataset?` + searchParams.toString())
+            return textResponse(response)
+        }
+    )
 };
