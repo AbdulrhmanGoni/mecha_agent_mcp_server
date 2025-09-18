@@ -1,6 +1,10 @@
 {
   "name": "mecha_agent_mcp_server",
   "private": true,
+  "scripts": {
+    "start": "bun run server.ts",
+    "dev": "mcp-inspector"
+  },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.16.7",
     "@types/bun": "latest"
